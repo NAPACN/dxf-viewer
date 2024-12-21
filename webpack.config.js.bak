@@ -1,0 +1,80 @@
+/**
+ * webpack.config
+ *
+ * Created by Igor.N on 11.03.2024 23:36
+ *
+ */
+
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+module.exports = ({ development }) => ({
+    entry: development ?'./src/indexDev.ts':'./src/index.ts',
+    devtool: development ? 'inline-source-map' : false,
+    optimization: {
+        minimize: development ? false :true ,
+        splitChunks: {
+            chunks: 'all', // 分割所有的代码块，包括异步和同步的
+            minSize: 20000, // 最小分割大小（以字节为单位），只有超过这个大小的代码块才会被分割
+            maxSize: 70000, // 最大分割大小（可选），用于防止过大的分割块
+            minChunks: 1, // 引入模块的文件数 >= 此值时才会被分割
+            maxAsyncRequests: 30, // 按需加载时的最大并行请求数
+            maxInitialRequests: 30, // 入口点并行请求的最大数量
+            automaticNameDelimiter: '~', // 分割块名称的分隔符
+            cacheGroups: { // 缓存组，可以自定义分割逻辑
+                vendors: {
+                    test: /[\\/]node_modules[\\/]/, // 匹配node_modules中的模块
+                    priority: -10, // 缓存组的优先级（数字越小优先级越高）
+                },
+                default: {
+                    minChunks: 2, // 至少被两个入口点引入的模块才会被分割到default组
+                    priority: -20, // 优先级低于vendors
+                    reuseExistingChunk: true, // 如果当前代码块已经存在于另一个分割块中，则复用它而不是创建一个新的
+                },
+            },
+        },
+    },
+    mode: development ? 'development' : 'production',
+    output: {
+        filename: '[name].[contenthash].js',
+        path: path.resolve(__dirname, development ? 'devDist' : 'dist'),
+        library: 'dxfViewer',
+        libraryExport: 'default',
+        libraryTarget: 'umd',
+        umdNamedDefine: true,
+        globalObject: 'typeof self === \'undefined\' ? this : self',
+        clean: true,
+    },
+    resolve: {
+        extensions: ['.ts','.js'],
+    },
+    module: {
+        rules: [
+            {
+                test: /\.(js|ts)$/,
+                // test: /\.ts$/,
+                exclude: /node_modules/,
+                use: ['babel-loader', 'ts-loader'],
+                // use: ['babel-loader'],
+            },
+            ...development?[{
+                test: /Roboto-LightItalic.ttf$/i,
+                type: 'asset/inline',
+            }]:[]
+        ],
+    },
+    ... development ? {
+        plugins: [
+            new HtmlWebpackPlugin({
+                template: 'src/index.html',
+            }),
+        ],
+        stats: 'errors-only',
+        devServer: {
+            static: {
+                directory: path.join(__dirname,  development ? 'devDist' : 'dist'), // Каталог для статики
+            },
+            open: true, // Автоматически открывать браузер
+        }
+    }:{}
+});
