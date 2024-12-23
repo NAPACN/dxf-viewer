@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>dxf view</title>
+    <script type="text/javascript">
+        // DXFview加载完成
+        document.addEventListener('DxfViewLoadEvent', async function (event) {
+            console.log("DxfViewLoadEvent");
+            const body = document.body, html = document.documentElement;
+
+            const height = Math.max( body.scrollHeight, body.offsetHeight,
+                html.clientHeight, html.scrollHeight, html.offsetHeight );
+            document.getElementById('result')?.setAttribute("style","height:"+(height-37)+'px');
+            const progress=()=>{
+
+            }
+            const cadCanvas2 = WDxfViewer.initConfig(document.getElementById("result"), {
+                autoResize: true,
+                colorCorrection: true,
+                sceneOptions: {
+                    wireframeMesh: true
+                }
+            });
+
+        })
+    </script>
+</head>
+<body>
+
+<div id="result" style="width: 100%; height: 500px; minWidth: 100px; minHeight: 300px; position: relative;
+"></div>
+</body>
+</html>

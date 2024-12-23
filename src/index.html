@@ -7,7 +7,55 @@
 </head>
 <body>
 <input type="file" id="file">upload dxf file</input>
-<div id="result" style="width: 100%; height: 500px; minWidth: 100px; minHeight: 300px; position: relative;
+<input type="text" id="text" value="http://localhost:63342/dxf-viewer-lyj/devDist/Roboto-LightItalic.ttf">文字</input> <br/>
+<input type="text" id="dxfurl" value="http://localhost:63342/dxf-viewer-lyj/devDist/Drawing1.dxf">dxfurl</input> <button onclick="parseDxf()">加载dxf</button>
+<input type="text" id="progressText" value="">加载文字</input>
+<script type="text/javascript">
+ function parseDxf() {
+     var text = document.getElementById("text").value;
+     var dxfUrl = document.getElementById("dxfurl").value;
+     const curProgressPhase =  null;
+     const progress =  null;
+     const progressing=(phase, size, totalSize)=>{
+         if (phase !== this.curProgressPhase) {
+             var progressText = document.getElementById("progressText");
+             switch(phase) {
+                 case "font":
+                     progressText.value = "Fetching fonts..."
+
+                     break
+                 case "fetch":
+                     progressText.value = "Fetching file..."
+                     break
+                 case "parse":
+                     progressText.value = "Parsing file..."
+                     break
+                 case "prepare":
+                     progressText.value = "Preparing rendering data..."
+                     break
+             }
+             console.log(progressText)
+             this.curProgressPhase = phase
+         }
+         if (totalSize === null) {
+             this.progress = -1
+         } else {
+             this.progress = size / totalSize
+         }
+     }
+     alert(text);
+     alert(dxfUrl);
+     WDxfViewer.Load({
+         fonts: [text],
+         // fonts: ["http://localhost:63342/devDist/Roboto-LightItalic.ttf"],
+         url: dxfUrl,
+         progressCbk: progressing.bind(this),
+         workerFactory: null,
+         props:{ filterTags:["SN"] }
+     });
+ }
+</script>
+<div id="dxfViewContainer" style="width: 100%; height: 500px; minWidth: 100px; minHeight: 300px; position: relative;
 "></div>
 </body>
 </html>

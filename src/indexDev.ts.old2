@@ -1,0 +1,16 @@
+import {DxfFetcher} from "./DxfFetcher"
+import {DxfViewer} from "./DxfViewer"
+import three from "three"
+import * as constants from "node:constants";
+
+export {DxfFetcher, DxfViewer}
+
+// const mainFont = require('./fonts/Roboto-LightItalic.ttf')
+
+export default {DxfFetcher, DxfViewer}
+// 定义一个加载完成的事件
+// window.DxfViewerObj = new DxfViewer();
+const WDxfViewer = new DxfViewer();
+(window as any).WDxfViewer = WDxfViewer;
+document.dispatchEvent(new CustomEvent('DxfViewLoadEvent'));
+console.log("DxfViewLoadEvent js req end");
