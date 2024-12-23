@@ -13,32 +13,22 @@ const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = ({ development }) => ({
     entry: development ?'./src/indexDev.ts':'./src/index.ts',
-    devtool: development ? 'inline-source-map' : false,
+    devtool:  false,
+    // devtool: development ? 'inline-source-map' : false,
     optimization: {
        // minimize: development ? false :true ,
        minimize: true,
        minimizer: [
-           false && new TerserPlugin({
+           new TerserPlugin({
                terserOptions: {
                    compress: {
-                       drop_console: true, // 移除 console.log 语句
-                       drop_debugger: true, // 移除 debugger 语句
-                       // 其他压缩选项...
+                       arguments: true,
+                       dead_code: true,
                    },
-                   mangle: {
-                       properties: {
-                           // 混淆对象属性名（注意：这可能会导致代码难以调试）
-                           // regex: /^_/  // 例如，只混淆以 _ 开头的属性名
-                       },
-                   },
-                   output: {
-                       comments: false, // 移除注释
-                       // 其他输出选项...
-                   },
-                   // 其他 Terser 选项...
+                   toplevel: true,
+                   keep_classnames: true,
+                   keep_fnames: true,
                },
-               extractComments: false, // 不将注释提取到单独的文件中
-               // 其他 TerserPlugin 选项...
            }),
        ]
     },
